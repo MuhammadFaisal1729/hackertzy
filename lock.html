@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hacker Themed Lock Screen</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap");
+
+      :root {
+        --bg-color: #000000;
+        --neon-green: #39ff14;
+        --error-red: #ff5555;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body,
+      html {
+        height: 100%;
+        margin: 0;
+        font-family: "Share Tech Mono", monospace, monospace;
+        background-color: #000; /* Dark background */
+        color: var(--neon-green);
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* Matrix style background */
+      #matrix-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1; /* Behind other content */
+        pointer-events: none;
+      }
+
+      #lock-screen {
+        width: 90vw;
+        max-width: 400px;
+        background-color: #011400cc; /* slightly transparent dark */
+        padding: 2rem 2.5rem;
+        border-radius: 12px;
+        box-shadow: 0 0 10px var(--neon-green), inset 0 0 20px var(--neon-green);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        animation: flicker 1.5s infinite alternate;
+        position: relative; /* Ensure it's above the canvas */
+        z-index: 1; /* Ensure it's above the canvas */
+      }
+
+      h1 {
+        margin-bottom: 1rem;
+        font-weight: 700;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        font-size: 2rem;
+        user-select: none;
+      }
+
+      label {
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+        user-select: none;
+      }
+
+      input[type="password"] {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 1.3rem;
+        padding: 0.5rem 1rem;
+        border: 2px solid var(--neon-green);
+        border-radius: 8px;
+        background-color: transparent;
+        color: var(--neon-green);
+        outline: none;
+        width: 100%;
+        max-width: 100%;
+        transition: box-shadow 0.3s ease;
+      }
+
+      input[type="password"]:focus {
+        box-shadow: 0 0 12px var(--neon-green);
+      }
+
+      button {
+        margin-top: 1.25rem;
+        background-color: transparent;
+        border: 2px solid var(--neon-green);
+        color: var(--neon-green);
+        font-size: 1.2rem;
+        font-weight: 700;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        cursor: pointer;
+        text-transform: uppercase;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      button:hover,
+      button:focus {
+        background-color: var(--neon-green);
+        color: var(--bg-color);
+        outline: none;
+      }
+
+      #error-msg {
+        margin-top: 1rem;
+        color: var(--error-red);
+        font-weight: 600;
+        user-select: none;
+        min-height: 1.2rem;
+        text-align: center;
+      }
+
+      @keyframes flicker {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.85;
+        }
+      }
+
+      /* Main content hidden by default */
+      #main-content {
+        display: none;
+        color: var(--neon-green);
+        width: 90vw;
+        max-width: 900px;
+        padding: 2rem;
+        text-align: center;
+        user-select: text;
+      }
+
+      #main-content h2 {
+        font-size: 2.5rem;
+        letter-spacing: 4px;
+        margin-bottom: 1rem;
+      }
+
+      #main-content p {
+        font-size: 1.1rem;
+        line-height: 1.6;
+      }
+
+      /* subtle typing cursor effect for heading */
+      .cursor {
+        display: inline-block;
+        width: 10px;
+        height: 24px;
+        background-color: var(--neon-green);
+        animation: blink 1s step-start infinite;
+        vertical-align: bottom;
+        margin-left: 3px;
+        border-radius: 2px;
+      }
+
+      @keyframes blink {
+        0%,
+        50% {
+          opacity: 1;
+        }
+        51%,
+        100% {
+          opacity: 0;
+        }
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 480px) {
+        #lock-screen {
+          padding: 1.5rem 2rem;
+        }
+
+        h1 {
+          font-size: 1.5rem;
+          letter-spacing: 2px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="matrix-canvas"></canvas>
+
+    <div
+      id="lock-screen"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="lock-title"
+    >
+      <h1 id="lock-title">ACCESS LOCKED</h1>
+      <label for="password-input">Enter password to unlock</label>
+      <input
+        type="password"
+        id="password-input"
+        name="password"
+        aria-describedby="error-msg"
+        autocomplete="off"
+        spellcheck="false"
+        autofocus
+        aria-required="true"
+        placeholder="Password"
+      />
+      <button id="unlock-btn" aria-label="Unlock Website">Unlock</button>
+      <div id="error-msg" aria-live="assertive" role="alert"></div>
+    </div>
+
+    <a href="tema.html"
+      ><main id="main-content" tabindex="-1" aria-label="Main Website Content">
+        <h2>WELCOME, AGENT<span class="cursor" aria-hidden="true"></span></h2>
+        <p>
+          You have successfully bypassed the lock. This is your secure
+          hacker-themed dashboard.<br /><br />
+          Here you can find mission data, system status, and encrypted
+          communications.<br /><br />
+          Use your skills wisely.
+        </p>
+      </main></a
+    >
+
+    <script>
+      (function () {
+        const PASSWORD = "icalhengkertzy"; // Default password
+
+        const lockScreen = document.getElementById("lock-screen");
+        const mainContent = document.getElementById("main-content");
+        const passwordInput = document.getElementById("password-input");
+        const unlockBtn = document.getElementById("unlock-btn");
+        const errorMsg = document.getElementById("error-msg");
+
+        function showError(message) {
+          errorMsg.textContent = message;
+          setTimeout(() => {
+            errorMsg.textContent = "";
+          }, 3000);
+        }
+
+        function unlock() {
+          const entered = passwordInput.value;
+          if (!entered) {
+            showError("Password cannot be empty.");
+            return;
+          }
+          if (entered === PASSWORD) {
+            // Hide lock screen, show content
+            lockScreen.style.display = "none";
+            mainContent.style.display = "block";
+            // set focus to main content for accessibility
+            mainContent.focus();
+          } else {
+            showError("Incorrect password. Try again.");
+            passwordInput.value = "";
+            passwordInput.focus();
+          }
+        }
+
+        unlockBtn.addEventListener("click", unlock);
+
+        passwordInput.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            unlock();
+          }
+        });
+      })();
+
+      // Matrix rain effect
+      (() => {
+        const canvas = document.getElementById("matrix-canvas");
+        const ctx = canvas.getContext("2d");
+
+        let width, height;
+        const letters = "0123456789";
+        let fontSize = 16;
+        let columns;
+        let drops;
+
+        function setup() {
+          width = window.innerWidth;
+          height = window.innerHeight;
+          canvas.width = width;
+          canvas.height = height;
+          fontSize = 18;
+          columns = Math.floor(width / fontSize);
+          drops = [];
+          for (let i = 0; i < columns; i++) {
+            drops[i] = Math.floor((Math.random() * height) / fontSize);
+          }
+        }
+
+        function draw() {
+          ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+          ctx.fillRect(0, 0, width, height);
+
+          ctx.fillStyle = "#00ff00";
+          ctx.font = fontSize + "px Share Tech Mono";
+
+          for (let i = 0; i < drops.length; i++) {
+            const text = letters.charAt(
+              Math.floor(Math.random() * letters.length)
+            );
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+            if (drops[i] * fontSize > height && Math.random() > 0.975) {
+              drops[i] = 0;
+            }
+            drops[i]++;
+          }
+        }
+
+        function loop() {
+          draw();
+          requestAnimationFrame(loop);
+        }
+
+        window.addEventListener("resize", setup);
+
+        setup();
+        loop();
+      })();
+    </script>
+  </body>
+</html>

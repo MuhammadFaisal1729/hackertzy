@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hacker's Hub</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;700&display=swap");
+
+      :root {
+        --bg-color: #000000;
+        --neon-green: #00ff00;
+        --neon-green-accent: #00ff99;
+        --text-color: #00ff00;
+        --shadow-glow: 0 0 10px #00ff00, 0 0 20px #00ff99, 0 0 30px #00ff99;
+        --shadow-glow-light: 0 0 6px #00ff00, 0 0 12px #00ff99;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        font-family: "Source Code Pro", monospace;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow-x: hidden;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Matrix style background */
+      #matrix-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 0;
+        pointer-events: none;
+        background: black;
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        background: rgba(0, 0, 0, 0.85);
+        border-bottom: 1px solid var(--neon-green-accent);
+        padding: 1rem 2rem;
+        z-index: 10;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        backdrop-filter: saturate(180%) blur(10px);
+      }
+
+      header .logo {
+        font-weight: 700;
+        font-size: 1.5rem;
+        text-shadow: var(--shadow-glow-light);
+        cursor: default;
+        user-select: none;
+      }
+
+      nav a {
+        color: var(--neon-green);
+        text-decoration: none;
+        font-weight: 600;
+        margin-left: 2rem;
+        position: relative;
+        transition: color 0.3s ease;
+        text-shadow: var(--shadow-glow-light);
+      }
+
+      nav a::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -4px;
+        width: 0%;
+        height: 2px;
+        background: var(--neon-green);
+        transition: width 0.3s ease;
+        border-radius: 2px;
+      }
+
+      nav a:hover,
+      nav a:focus {
+        color: var(--neon-green-accent);
+        outline: none;
+      }
+
+      nav a:hover::after,
+      nav a:focus::after {
+        width: 100%;
+      }
+
+      main {
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 1rem;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero {
+        max-width: 720px;
+        border: 2px solid var(--neon-green-accent);
+        border-radius: 1rem;
+        padding: 3rem 2rem;
+        background: rgba(0, 0, 0, 0.8);
+        box-shadow: var(--shadow-glow-light);
+        user-select: none;
+      }
+
+      .hero h1 {
+        font-size: 4rem;
+        margin: 0 0 1rem 0;
+        font-weight: 700;
+        text-shadow: var(--shadow-glow);
+        letter-spacing: 0.15em;
+      }
+
+      .hero p {
+        font-size: 1.25rem;
+        font-weight: 400;
+        margin: 0 0 2rem 0;
+        color: var(--neon-green-accent);
+        min-height: 2.2rem; /* to reserve space for typing */
+        white-space: nowrap;
+        overflow: hidden;
+        border-right: 3px solid var(--neon-green);
+        animation: blink-caret 0.7s step-end infinite;
+        font-family: "Source Code Pro", monospace;
+      }
+
+      @keyframes blink-caret {
+        50% {
+          border-color: transparent;
+        }
+      }
+
+      .btn {
+        background: transparent;
+        border: 2px solid var(--neon-green);
+        border-radius: 0.5rem;
+        color: var(--neon-green);
+        font-weight: 700;
+        font-size: 1.125rem;
+        padding: 0.75rem 2rem;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        box-shadow: var(--shadow-glow-light);
+        transition: all 0.25s ease;
+        user-select: none;
+      }
+
+      .btn:hover,
+      .btn:focus {
+        background: var(--neon-green);
+        color: #000;
+        outline: none;
+        box-shadow: 0 0 15px var(--neon-green), inset 0 0 6px #00ffa0;
+        transform: scale(1.05);
+      }
+
+      footer {
+        text-align: center;
+        padding: 1rem 1rem 2rem;
+        font-size: 0.875rem;
+        color: var(--neon-green-accent);
+        user-select: none;
+      }
+
+      /* Responsive */
+      @media (max-width: 600px) {
+        .hero h1 {
+          font-size: 3rem;
+        }
+
+        .hero p {
+          font-size: 1rem;
+        }
+
+        nav a {
+          margin-left: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="matrix-canvas"></canvas>
+
+    <main>
+      <section class="hero" role="banner" aria-label="Hero section">
+        <h1>RRQ.Faisal Tzy</h1>
+        <p id="typing"></p>
+        <a href="home.html"
+          ><button
+            class="btn"
+            type="button"
+            aria-label="Get Started with Hacker's Hub"
+          >
+            Get Started
+          </button></a
+        >
+      </section>
+    </main>
+    <footer>&copy; 2024 Hacker's Hub. All rights reserved.</footer>
+    <script>
+      // Matrix rain effect
+      (() => {
+        const canvas = document.getElementById("matrix-canvas");
+        const ctx = canvas.getContext("2d");
+
+        let width, height;
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()";
+        let fontSize = 16;
+        let columns;
+        let drops;
+
+        function setup() {
+          width = window.innerWidth;
+          height = window.innerHeight;
+          canvas.width = width;
+          canvas.height = height;
+          fontSize = 18;
+          columns = Math.floor(width / fontSize);
+          drops = [];
+          for (let i = 0; i < columns; i++) {
+            drops[i] = Math.floor((Math.random() * height) / fontSize);
+          }
+        }
+
+        function draw() {
+          ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+          ctx.fillRect(0, 0, width, height);
+
+          ctx.fillStyle = "#00ff00";
+          ctx.font = fontSize + "px source code pro";
+
+          for (let i = 0; i < drops.length; i++) {
+            const text = letters.charAt(
+              Math.floor(Math.random() * letters.length)
+            );
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+            if (drops[i] * fontSize > height && Math.random() > 0.975) {
+              drops[i] = 0;
+            }
+            drops[i]++;
+          }
+        }
+
+        function loop() {
+          draw();
+          requestAnimationFrame(loop);
+        }
+
+        window.addEventListener("resize", setup);
+
+        setup();
+        loop();
+      })();
+
+      // Typing effect for hero subtitle
+      (() => {
+        const phrases = [
+          "Welcome to your command center.",
+          "Learn, Explore, Hack ethically.",
+          "Master your coding skills.",
+          "Secure the future, one line at a time.",
+        ];
+        const el = document.getElementById("typing");
+        let currentPhraseIndex = 0;
+        let currentLetterIndex = 0;
+        let typingDelay = 70;
+        let erasingDelay = 40;
+        let pauseDelay = 1500;
+
+        function type() {
+          if (currentLetterIndex < phrases[currentPhraseIndex].length) {
+            el.textContent +=
+              phrases[currentPhraseIndex].charAt(currentLetterIndex);
+            currentLetterIndex++;
+            setTimeout(type, typingDelay);
+          } else {
+            setTimeout(erase, pauseDelay);
+          }
+        }
+
+        function erase() {
+          if (currentLetterIndex > 0) {
+            el.textContent = phrases[currentPhraseIndex].substring(
+              0,
+              currentLetterIndex - 1
+            );
+            currentLetterIndex--;
+            setTimeout(erase, erasingDelay);
+          } else {
+            currentPhraseIndex = (currentPhraseIndex + 1) % phrases.length;
+            setTimeout(type, typingDelay + 1100);
+          }
+        }
+        // Start typing effect on load
+        document.addEventListener("DOMContentLoaded", () => {
+          if (phrases.length) type();
+        });
+      })();
+    </script>
+  </body>
+</html>
